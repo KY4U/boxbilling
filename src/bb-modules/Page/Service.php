@@ -48,12 +48,16 @@ class Service implements InjectionAwareInterface
         );
 
         $list = array();
-        foreach($paths as $path) {
-            foreach(glob($path.'mod_page_*.phtml') as $file) {
-                $file = str_replace('mod_page_', '', pathinfo($file, PATHINFO_FILENAME));
-                $list[$file] = ucwords(strtr($file, array('-'=>' ', '_'=>' ')));
-            }
-        }
+        if (isset($paths) && is_array($paths)) {
+	        foreach($paths as $path) {
+	        	if (isset($path) && is_array($path)) {
+		            foreach(glob($path.'mod_page_*.phtml') as $file) {
+		                $file = str_replace('mod_page_', '', pathinfo($file, PATHINFO_FILENAME));
+		                $list[$file] = ucwords(strtr($file, array('-'=>' ', '_'=>' ')));
+		            }
+		        }
+	        }
+	    }
 
         return $list;
     }

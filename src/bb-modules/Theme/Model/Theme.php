@@ -46,9 +46,11 @@ class Theme
         $path = $this->getPathHtml();
         $snippets = glob($path .DIRECTORY_SEPARATOR. 'snippet_*.phtml');
         $result = array();
-        foreach($snippets as $snippet) {
-            $result[basename($snippet)] = str_replace('snippet_','', pathinfo($snippet, PATHINFO_FILENAME));
-        }
+        if(isset($snippets) && is_array($snippets)) {
+	        foreach($snippets as $snippet) {
+	            $result[basename($snippet)] = str_replace('snippet_','', pathinfo($snippet, PATHINFO_FILENAME));
+	        }
+	    }
         return $result;
     }
 

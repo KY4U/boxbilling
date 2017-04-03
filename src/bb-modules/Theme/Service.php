@@ -219,21 +219,24 @@ class Service implements InjectionAwareInterface
 
         $css_files = $this->di['tools']->glob($assets . '*.css.phtml');
         $js_files = $this->di['tools']->glob($assets . '*.js.phtml');
-        $files = array_merge($css_files, $js_files);
+		if (isset($css_files) && is_array($css_files))
+			$files = array_merge($css_files, $js_files);
+		
+		if(isset($files) && is_array($files)) {
+			foreach($files as $file) {
+				$settings = $this->getThemeSettings($theme, $preset);
+				$real_file = pathinfo($file, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR .pathinfo($file, PATHINFO_FILENAME);
 
-        foreach($files as $file) {
-            $settings = $this->getThemeSettings($theme, $preset);
-            $real_file = pathinfo($file, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR .pathinfo($file, PATHINFO_FILENAME);
+				$vars = array();
 
-            $vars = array();
+				$vars['settings'] = $settings;
+				$vars['_tpl'] = $this->di['tools']->file_get_contents($file);
+				$systemService = $this->di['mod_service']('system');
+				$data = $systemService->renderString($vars['_tpl'], false, $vars);
 
-            $vars['settings'] = $settings;
-            $vars['_tpl'] = $this->di['tools']->file_get_contents($file);
-            $systemService = $this->di['mod_service']('system');
-            $data = $systemService->renderString($vars['_tpl'], false, $vars);
-
-            $this->di['tools']->file_put_contents($data, $real_file);
-        }
+				$this->di['tools']->file_put_contents($data, $real_file);
+			}
+		}
         return true;
     }
 
